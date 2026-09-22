@@ -39,11 +39,18 @@ public class Projectile : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
+        // Intenta dañar a un enemigo si el objeto colisionado tiene el script Enemy
         Enemy enemy = collision.gameObject.GetComponent<Enemy>();
-
         if (enemy != null)
         {
             enemy.TakeDamage(elementType);
+        }
+
+        // Intenta dañar un cerrojo elemental si el objeto colisionado tiene el script ElementalLock
+        ElementalLock lockObject = collision.gameObject.GetComponent<ElementalLock>();
+        if (lockObject != null)
+        {
+            lockObject.TakeDamage(elementType);
         }
 
         Destroy(gameObject);
