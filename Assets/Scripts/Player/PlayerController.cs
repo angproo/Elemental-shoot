@@ -19,6 +19,8 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        if (Time.timeScale == 0f) return;
+
         isGrounded = controller.isGrounded;
 
         if (isGrounded && velocity.y < 0)

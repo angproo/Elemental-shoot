@@ -40,6 +40,9 @@ public class WeaponController : MonoBehaviour
 
     private void Update()
     {
+        // Si el juego está pausado o en pantalla de fin de juego, no procesar acciones del arma
+        if (Time.timeScale == 0f) return;
+
         if (isReloading) return;
 
         // Selección de elementos con teclas 1, 2, 3 y 4

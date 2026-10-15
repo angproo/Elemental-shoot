@@ -5,6 +5,9 @@ public class PlayerHealth : MonoBehaviour
     [Header("Configuración de Vida")]
     [SerializeField] private int maxHealth = 100;
 
+    [Header("Referencias")]
+    [SerializeField] private GameOverController gameOverController;
+
     private int currentHealth;
 
     public int CurrentHealth => currentHealth;
@@ -13,6 +16,11 @@ public class PlayerHealth : MonoBehaviour
     private void Start()
     {
         currentHealth = maxHealth;
+
+        if (gameOverController == null)
+        {
+            gameOverController = FindFirstObjectByType<GameOverController>();
+        }
     }
 
     /// <summary>
@@ -47,6 +55,11 @@ public class PlayerHealth : MonoBehaviour
     private void Die()
     {
         Debug.Log("[Jugador Muerto] El jugador ha sido derrotado.");
-        // En la Fase 5 se activará la pantalla de GameOver
+        
+        // Activa la pantalla de derrota si existe GameOverController en la escena
+        if (gameOverController != null)
+        {
+            gameOverController.TriggerDefeat();
+        }
     }
 }
