@@ -26,7 +26,7 @@ public class PauseMenuController : MonoBehaviour
     private void Update()
     {
         // Al presionar Escape (ESC), alterna entre pausar y reanudar
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.E))
         {
             if (isPaused)
             {
