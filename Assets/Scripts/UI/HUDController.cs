@@ -7,6 +7,7 @@ public class HUDController : MonoBehaviour
     [Header("Referencias a Scripts del Jugador")]
     [SerializeField] private WeaponController weaponController;
     [SerializeField] private PlayerHealth playerHealth;
+    [SerializeField] private BossController bossController;
 
     [Header("Elementos de la Interfaz (UI)")]
     [SerializeField] private TextMeshProUGUI healthText;
@@ -15,6 +16,11 @@ public class HUDController : MonoBehaviour
     [SerializeField] private TextMeshProUGUI reloadIndicatorText;
     [SerializeField] private Image elementIconImage;
     [SerializeField] private Image crosshairImage;
+
+    [Header("UI del Jefe (Opcional)")]
+    [SerializeField] private GameObject bossUIPanel;
+    [SerializeField] private TextMeshProUGUI bossHealthText;
+    [SerializeField] private TextMeshProUGUI bossPhaseText;
 
     [Header("Colores por Elemento")]
     [SerializeField] private Color fireColor = new Color(1f, 0.3f, 0.1f);
@@ -34,12 +40,50 @@ public class HUDController : MonoBehaviour
         {
             playerHealth = FindFirstObjectByType<PlayerHealth>();
         }
+
+        if (bossController == null)
+        {
+            bossController = FindFirstObjectByType<BossController>();
+        }
     }
 
     private void Update()
     {
         UpdateHealthUI();
         UpdateAmmoAndElementUI();
+        UpdateBossUI();
+    }
+
+    private void UpdateBossUI()
+    {
+        if (bossController == null)
+        {
+            if (bossUIPanel != null && bossUIPanel.activeSelf)
+            {
+                bossUIPanel.SetActive(false);
+            }
+            return;
+        }
+
+        if (bossUIPanel != null && !bossUIPanel.activeSelf && !bossController.IsDead)
+        {
+            bossUIPanel.SetActive(true);
+        }
+
+        if (bossHealthText != null)
+        {
+            bossHealthText.text = $"JEFE HP: {bossController.CurrentHealth} / {bossController.MaxHealth}";
+        }
+
+        if (bossPhaseText != null)
+        {
+            bossPhaseText.text = $"FASE: {bossController.CurrentPhase}";
+        }
+
+        if (bossController.IsDead && bossUIPanel != null && bossUIPanel.activeSelf)
+        {
+            bossUIPanel.SetActive(false);
+        }
     }
 
     private void UpdateHealthUI()

@@ -9,6 +9,11 @@ public class Projectile : MonoBehaviour
 
     [SerializeField] private ElementType elementType;
 
+    [Header("Configuración de Audio de Impacto")]
+    [SerializeField] private AudioClip hitSound;
+    [SerializeField] private AudioClip effectiveHitSound;
+    [Range(0f, 1f)] [SerializeField] private float impactVolume = 1f;
+
     private Rigidbody rb;
     private MeshRenderer meshRenderer;
 
@@ -39,11 +44,23 @@ public class Projectile : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
+        bool hasHitEnemy = false;
+        bool isEffective = false;
+
         // Intenta dañar a un enemigo si el objeto colisionado tiene el script Enemy
         Enemy enemy = collision.gameObject.GetComponent<Enemy>();
         if (enemy != null)
         {
-            enemy.TakeDamage(elementType);
+            hasHitEnemy = true;
+            isEffective = enemy.TakeDamage(elementType);
+        }
+
+        // Intenta dañar al jefe final si el objeto colisionado tiene el script BossController
+        BossController boss = collision.gameObject.GetComponent<BossController>();
+        if (boss != null)
+        {
+            hasHitEnemy = true;
+            isEffective = boss.TakeDamage(elementType);
         }
 
         // Intenta dañar un cerrojo elemental si el objeto colisionado tiene el script ElementalLock
@@ -51,6 +68,23 @@ public class Projectile : MonoBehaviour
         if (lockObject != null)
         {
             lockObject.TakeDamage(elementType);
+        }
+
+        // Reproduce el sonido de impacto si corresponde
+        if (hasHitEnemy)
+        {
+            if (isEffective && effectiveHitSound != null)
+            {
+                AudioSource.PlayClipAtPoint(effectiveHitSound, transform.position, impactVolume);
+            }
+            else if (hitSound != null)
+            {
+                AudioSource.PlayClipAtPoint(hitSound, transform.position, impactVolume);
+            }
+        }
+        else if (hitSound != null)
+        {
+            AudioSource.PlayClipAtPoint(hitSound, transform.position, impactVolume);
         }
 
         Destroy(gameObject);

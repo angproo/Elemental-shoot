@@ -156,3 +156,6 @@ MonoBehaviour:
   speed: 30
   lifeTime: 2
   elementType: 0
+  hitSound: {fileID: 0}
+  effectiveHitSound: {fileID: 8300000, guid: b7371d0d2d5922442924272efe618f3e, type: 3}
+  impactVolume: 0.5

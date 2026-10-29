@@ -12,6 +12,13 @@ public class WeaponController : MonoBehaviour
     [SerializeField] private int maxAmmo = 30;             // Capacidad máxima del cargador
     [SerializeField] private float reloadTime = 1.5f;      // Tiempo en segundos que tarda la recarga
 
+    [Header("Configuración de Audio")]
+    [SerializeField] private AudioSource weaponAudioSource;
+    [SerializeField] private AudioClip shootSound;
+    [SerializeField] private AudioClip reloadSound;
+    [SerializeField] private AudioClip emptyAmmoSound;
+    [Range(0f, 1f)] [SerializeField] private float weaponVolume = 1f;
+
     // Estado interno del arma
     private int currentAmmo;
     private float nextFireTime = 0f;
@@ -30,6 +37,16 @@ public class WeaponController : MonoBehaviour
         if (projectileFactory == null)
         {
             projectileFactory = GetComponent<ProjectileFactory>();
+        }
+
+        // Si no está asignado el AudioSource por Inspector, busca o crea uno en este GameObject
+        if (weaponAudioSource == null)
+        {
+            weaponAudioSource = GetComponent<AudioSource>();
+            if (weaponAudioSource == null)
+            {
+                weaponAudioSource = gameObject.AddComponent<AudioSource>();
+            }
         }
     }
 
@@ -60,6 +77,7 @@ public class WeaponController : MonoBehaviour
         {
             if (currentAmmo <= 0)
             {
+                PlaySound(emptyAmmoSound);
                 StartCoroutine(ReloadRoutine());
                 return;
             }
@@ -100,6 +118,8 @@ public class WeaponController : MonoBehaviour
         nextFireTime = Time.time + fireRate;
         currentAmmo--;
 
+        PlaySound(shootSound);
+
         // Delega la creación de la bala a la fábrica (ProjectileFactory)
         if (projectileFactory != null && firePoint != null)
         {
@@ -116,10 +136,20 @@ public class WeaponController : MonoBehaviour
         isReloading = true;
         Debug.Log("Recargando arma...");
 
+        PlaySound(reloadSound);
+
         yield return new WaitForSeconds(reloadTime);
 
         currentAmmo = maxAmmo;
         isReloading = false;
         Debug.Log("Arma recargada: " + currentAmmo + "/" + maxAmmo);
+    }
+
+    private void PlaySound(AudioClip clip)
+    {
+        if (clip != null && weaponAudioSource != null)
+        {
+            weaponAudioSource.PlayOneShot(clip, weaponVolume);
+        }
     }
 }

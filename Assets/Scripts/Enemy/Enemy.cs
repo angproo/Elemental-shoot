@@ -81,7 +81,8 @@ public class Enemy : MonoBehaviour
     /// Recibe daño si la bala utilizada corresponde al elemento super-efectivo contra este enemigo.
     /// Relación Circular: Fire > Ice > Electricity > Acid > Fire
     /// </summary>
-    public void TakeDamage(ElementType bulletElement)
+    /// <returns>True si el impacto fue efectivo, false si fue inmune.</returns>
+    public bool TakeDamage(ElementType bulletElement)
     {
         ElementType effectiveElement = GetEffectiveElementFor(enemyElement);
 
@@ -94,10 +95,12 @@ public class Enemy : MonoBehaviour
             {
                 Die();
             }
+            return true;
         }
         else
         {
             Debug.Log($"[Inmune] {gameObject.name} ({enemyElement}) es inmune a balas de {bulletElement}. Usa {effectiveElement}.");
+            return false;
         }
     }
 

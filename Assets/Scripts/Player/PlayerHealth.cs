@@ -55,7 +55,14 @@ public class PlayerHealth : MonoBehaviour
     private void Die()
     {
         Debug.Log("[Jugador Muerto] El jugador ha sido derrotado.");
-        
+
+        // Deshabilita componentes del jugador para evitar disparos o movimientos residuales
+        PlayerController playerController = GetComponent<PlayerController>();
+        if (playerController != null) playerController.enabled = false;
+
+        WeaponController weaponController = GetComponentInChildren<WeaponController>();
+        if (weaponController != null) weaponController.enabled = false;
+
         // Activa la pantalla de derrota si existe GameOverController en la escena
         if (gameOverController != null)
         {

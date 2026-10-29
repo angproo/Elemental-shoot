@@ -19,6 +19,9 @@ public class GameOverController : MonoBehaviour
     [Header("Nombre de la Escena del Menú Principal")]
     [SerializeField] private string mainMenuSceneName = "MainMenu";
 
+    [Header("Audio (Opcional)")]
+    [SerializeField] private AudioManager audioManager;
+
     private bool isGameOver = false;
 
     public bool IsGameOver => isGameOver;
@@ -29,6 +32,11 @@ public class GameOverController : MonoBehaviour
         if (gameOverPanel != null)
         {
             gameOverPanel.SetActive(false);
+        }
+
+        if (audioManager == null)
+        {
+            audioManager = FindFirstObjectByType<AudioManager>();
         }
     }
 
@@ -60,6 +68,19 @@ public class GameOverController : MonoBehaviour
             }
         }
 
+        // Reproduce el audio de victoria o derrota según el resultado
+        if (audioManager != null)
+        {
+            if (isVictory)
+            {
+                audioManager.PlayVictory();
+            }
+            else
+            {
+                audioManager.PlayDefeat();
+            }
+        }
+
         // Congela el juego y libera el cursor para poder pulsar los botones
         Time.timeScale = 0f;
         Cursor.lockState = CursorLockMode.None;
@@ -87,6 +108,7 @@ public class GameOverController : MonoBehaviour
     /// </summary>
     public void RestartGame()
     {
+        AudioListener.pause = false;
         Time.timeScale = 1f; // Restaurar el tiempo normal
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
@@ -96,6 +118,7 @@ public class GameOverController : MonoBehaviour
     /// </summary>
     public void LoadMainMenu()
     {
+        AudioListener.pause = false;
         Time.timeScale = 1f; // Restaurar el tiempo normal
         SceneManager.LoadScene(mainMenuSceneName);
     }
