@@ -13,8 +13,26 @@ public class BossController : MonoBehaviour
     [SerializeField] private int attackDamage = 20;
     [SerializeField] private float attackCooldown = 2.0f;
 
-    [Header("Indicador Visual Opcional")]
+    [Header("Disparo a Distancia")]
+    [SerializeField] private bool canShootProjectiles = true;
+    [SerializeField] private float shootCooldown = 2.5f;
+    [SerializeField] private Transform firePoint;
+    [SerializeField] private ProjectileFactory projectileFactory;
+    [SerializeField] private AudioClip shootSound;
+
+    [Header("Indicador Visual y Materiales por Fase")]
     [SerializeField] private Renderer bossRenderer;
+    [SerializeField] private Light bossLight;
+    [SerializeField] private Material fireMaterial;
+    [SerializeField] private Material iceMaterial;
+    [SerializeField] private Material electricityMaterial;
+    [SerializeField] private Material acidMaterial;
+
+    [Header("Colores por Fase")]
+    [SerializeField] private Color fireColor = new Color(1f, 0.3f, 0.1f);
+    [SerializeField] private Color iceColor = new Color(0.2f, 0.7f, 1f);
+    [SerializeField] private Color electricityColor = new Color(1f, 0.9f, 0.2f);
+    [SerializeField] private Color acidColor = new Color(0.3f, 1f, 0.2f);
 
     [Header("Configuración de Audio")]
     [SerializeField] private AudioSource bossAudioSource;
@@ -30,6 +48,7 @@ public class BossController : MonoBehaviour
     private int currentPhaseIndex = 0; // 0: Fire, 1: Ice, 2: Electricity, 3: Acid
     private bool isDead = false;
     private float nextAttackTime = 0f;
+    private float nextShootTime = 0f;
     private Transform playerTransform;
     private GameOverController gameOverController;
 
@@ -49,6 +68,16 @@ public class BossController : MonoBehaviour
         if (bossRenderer == null)
         {
             bossRenderer = GetComponentInChildren<Renderer>();
+        }
+
+        if (projectileFactory == null)
+        {
+            projectileFactory = FindFirstObjectByType<ProjectileFactory>();
+        }
+
+        if (bossLight == null)
+        {
+            bossLight = GetComponentInChildren<Light>();
         }
 
         if (bossAudioSource == null)
@@ -79,6 +108,7 @@ public class BossController : MonoBehaviour
         }
 
         OnHealthChanged?.Invoke(currentHealth, maxHealth);
+        UpdateVisualsForPhase(currentPhase);
         OnPhaseChanged?.Invoke(currentPhase);
     }
 
@@ -92,6 +122,11 @@ public class BossController : MonoBehaviour
         if (distanceToPlayer <= detectionRange && distanceToPlayer > attackRange)
         {
             MoveTowardsPlayer();
+
+            if (canShootProjectiles && Time.time >= nextShootTime)
+            {
+                ShootAtPlayer();
+            }
         }
         else if (distanceToPlayer <= attackRange)
         {
@@ -107,6 +142,30 @@ public class BossController : MonoBehaviour
         Vector3 targetPosition = new Vector3(playerTransform.position.x, transform.position.y, playerTransform.position.z);
         transform.position = Vector3.MoveTowards(transform.position, targetPosition, moveSpeed * Time.deltaTime);
         transform.LookAt(targetPosition);
+    }
+
+    private void ShootAtPlayer()
+    {
+        nextShootTime = Time.time + shootCooldown;
+
+        if (projectileFactory == null) return;
+
+        Vector3 spawnPos = firePoint != null ? firePoint.position : transform.position + Vector3.up * 1.5f + transform.forward * 1.0f;
+        Vector3 targetPos = playerTransform.position + Vector3.up * 1.0f;
+        Quaternion rotation = Quaternion.LookRotation(targetPos - spawnPos);
+
+        projectileFactory.CreateProjectile(currentPhase, spawnPos, rotation);
+
+        if (shootSound != null)
+        {
+            PlaySound(shootSound);
+        }
+        else
+        {
+            PlaySound(attackSound);
+        }
+
+        Debug.Log($"[Jefe - Disparo] Disparó proyectil de {currentPhase} hacia el jugador.");
     }
 
     private void AttackPlayer()
@@ -218,10 +277,54 @@ public class BossController : MonoBehaviour
             currentPhaseIndex = targetPhaseIndex;
             currentPhase = GetElementFromPhaseIndex(currentPhaseIndex);
 
+            UpdateVisualsForPhase(currentPhase);
             PlaySound(phaseChangeSound);
 
             Debug.Log($"[Jefe - Cambio de Fase] ¡El jefe cambia a fase {currentPhase} (Vulnerable a {GetWeaknessFor(currentPhase)})!");
             OnPhaseChanged?.Invoke(currentPhase);
+        }
+    }
+
+    private void UpdateVisualsForPhase(ElementType phase)
+    {
+        Material targetMat = null;
+        Color targetColor = fireColor;
+
+        switch (phase)
+        {
+            case ElementType.Fire:
+                targetMat = fireMaterial;
+                targetColor = fireColor;
+                break;
+            case ElementType.Ice:
+                targetMat = iceMaterial;
+                targetColor = iceColor;
+                break;
+            case ElementType.Electricity:
+                targetMat = electricityMaterial;
+                targetColor = electricityColor;
+                break;
+            case ElementType.Acid:
+                targetMat = acidMaterial;
+                targetColor = acidColor;
+                break;
+        }
+
+        if (bossRenderer != null)
+        {
+            if (targetMat != null)
+            {
+                bossRenderer.material = targetMat;
+            }
+            else if (bossRenderer.material != null)
+            {
+                bossRenderer.material.color = targetColor;
+            }
+        }
+
+        if (bossLight != null)
+        {
+            bossLight.color = targetColor;
         }
     }
 

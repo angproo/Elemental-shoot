@@ -47,6 +47,19 @@ public class Projectile : MonoBehaviour
         bool hasHitEnemy = false;
         bool isEffective = false;
 
+        // Intenta dañar al jugador si la bala impacta contra él
+        PlayerHealth player = collision.gameObject.GetComponent<PlayerHealth>();
+        if (player != null)
+        {
+            player.TakeDamage(10);
+            if (hitSound != null)
+            {
+                AudioSource.PlayClipAtPoint(hitSound, transform.position, impactVolume);
+            }
+            Destroy(gameObject);
+            return;
+        }
+
         // Intenta dañar a un enemigo si el objeto colisionado tiene el script Enemy
         Enemy enemy = collision.gameObject.GetComponent<Enemy>();
         if (enemy != null)

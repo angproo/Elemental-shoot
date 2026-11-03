@@ -77,7 +77,24 @@ public class HUDController : MonoBehaviour
 
         if (bossPhaseText != null)
         {
-            bossPhaseText.text = $"FASE: {bossController.CurrentPhase}";
+            string phaseName = bossController.CurrentPhase.ToString().ToUpper();
+            bossPhaseText.text = $"FASE JEFE: {phaseName}";
+
+            switch (bossController.CurrentPhase)
+            {
+                case ElementType.Fire:
+                    bossPhaseText.color = fireColor;
+                    break;
+                case ElementType.Ice:
+                    bossPhaseText.color = iceColor;
+                    break;
+                case ElementType.Electricity:
+                    bossPhaseText.color = electricityColor;
+                    break;
+                case ElementType.Acid:
+                    bossPhaseText.color = acidColor;
+                    break;
+            }
         }
 
         if (bossController.IsDead && bossUIPanel != null && bossUIPanel.activeSelf)
