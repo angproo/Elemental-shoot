@@ -8,17 +8,33 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioSource musicAudioSource;
     [SerializeField] private AudioSource sfxAudioSource;
 
-    [Header("Música Ambiental y de Combate")]
+    [Header("Clips de Música")]
     [SerializeField] private AudioClip ambientMusic;
-    [SerializeField] private AudioClip combatMusic;
-    [Range(0f, 1f)] [SerializeField] private float musicVolume = 0.7f;
+    [SerializeField] private AudioClip bossMusic;
 
     [Header("Música / Sonidos de Fin de Partida")]
     [SerializeField] private AudioClip victoryMusic;
     [SerializeField] private AudioClip defeatMusic;
-    [Range(0f, 1f)] [SerializeField] private float endMusicVolume = 0.8f;
+
+    [Header("Configuración de Volúmenes por Defecto")]
+    [Range(0f, 1f)] [SerializeField] private float defaultMasterVolume = 1f;
+    [Range(0f, 1f)] [SerializeField] private float defaultMusicVolume = 0.7f;
+    [Range(0f, 1f)] [SerializeField] private float defaultSfxVolume = 0.8f;
+
+    private float masterVolume = 1f;
+    private float musicVolume = 0.7f;
+    private float sfxVolume = 0.8f;
 
     private bool isGameOver = false;
+
+    // Constantes PlayerPrefs para persistencia
+    private const string PREF_MASTER = "Audio_MasterVolume";
+    private const string PREF_MUSIC = "Audio_MusicVolume";
+    private const string PREF_SFX = "Audio_SfxVolume";
+
+    public float MasterVolume => masterVolume;
+    public float MusicVolume => musicVolume;
+    public float SfxVolume => sfxVolume;
 
     private void Awake()
     {
@@ -29,6 +45,10 @@ public class AudioManager : MonoBehaviour
         }
 
         Instance = this;
+
+        // Persistir entre escenas (por ejemplo entre MainMenu y GameScene)
+        transform.SetParent(null);
+        DontDestroyOnLoad(gameObject);
 
         // Configuración o creación automática de AudioSources si no fueron asignados
         if (musicAudioSource == null)
@@ -41,24 +61,49 @@ public class AudioManager : MonoBehaviour
             sfxAudioSource = gameObject.AddComponent<AudioSource>();
         }
 
-        // La música de fondo debe estar en bucle y escuchar sin verse afectada por Time.timeScale = 0
         musicAudioSource.loop = true;
-        musicAudioSource.volume = musicVolume;
         musicAudioSource.ignoreListenerPause = true;
 
-        // La fuente de efectos/fin de partida ignora la pausa de Time.timeScale
         sfxAudioSource.loop = false;
-        sfxAudioSource.volume = endMusicVolume;
         sfxAudioSource.ignoreListenerPause = true;
+
+        LoadSavedVolumes();
+        ApplyVolumes();
     }
 
     private void Start()
     {
-        PlayAmbientMusic();
+        // Si no está sonando música, inicia la ambiental
+        if (!musicAudioSource.isPlaying && ambientMusic != null)
+        {
+            PlayAmbientMusic();
+        }
+    }
+
+    private void LoadSavedVolumes()
+    {
+        masterVolume = PlayerPrefs.GetFloat(PREF_MASTER, defaultMasterVolume);
+        musicVolume = PlayerPrefs.GetFloat(PREF_MUSIC, defaultMusicVolume);
+        sfxVolume = PlayerPrefs.GetFloat(PREF_SFX, defaultSfxVolume);
+    }
+
+    private void ApplyVolumes()
+    {
+        AudioListener.volume = masterVolume;
+
+        if (musicAudioSource != null)
+        {
+            musicAudioSource.volume = musicVolume;
+        }
+
+        if (sfxAudioSource != null)
+        {
+            sfxAudioSource.volume = sfxVolume;
+        }
     }
 
     /// <summary>
-    /// Inicia la música ambiental sin reiniciar si ya se está reproduciendo.
+    /// Cambia a la música ambiental si no está en Game Over.
     /// </summary>
     public void PlayAmbientMusic()
     {
@@ -67,14 +112,14 @@ public class AudioManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Cambia a la música de combate opcional si está asignada.
+    /// Cambia a la música del jefe final (combate).
     /// </summary>
-    public void PlayCombatMusic()
+    public void PlayBossMusic()
     {
         if (isGameOver) return;
-        if (combatMusic != null)
+        if (bossMusic != null)
         {
-            PlayMusic(combatMusic);
+            PlayMusic(bossMusic);
         }
     }
 
@@ -89,7 +134,7 @@ public class AudioManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Detiene la música ambiental y reproduce el sonido o música de victoria sin solaparse con derrota.
+    /// Detiene la música ambiental y reproduce el sonido o música de victoria.
     /// </summary>
     public void PlayVictory()
     {
@@ -104,12 +149,12 @@ public class AudioManager : MonoBehaviour
         if (victoryMusic != null && sfxAudioSource != null)
         {
             sfxAudioSource.Stop();
-            sfxAudioSource.PlayOneShot(victoryMusic, endMusicVolume);
+            sfxAudioSource.PlayOneShot(victoryMusic, sfxVolume);
         }
     }
 
     /// <summary>
-    /// Detiene la música ambiental y reproduce el sonido o música de derrota sin solaparse con victoria.
+    /// Detiene la música y reproduce el sonido o música de derrota.
     /// </summary>
     public void PlayDefeat()
     {
@@ -124,13 +169,32 @@ public class AudioManager : MonoBehaviour
         if (defeatMusic != null && sfxAudioSource != null)
         {
             sfxAudioSource.Stop();
-            sfxAudioSource.PlayOneShot(defeatMusic, endMusicVolume);
+            sfxAudioSource.PlayOneShot(defeatMusic, sfxVolume);
         }
     }
 
     /// <summary>
-    /// Ajusta el volumen de música en tiempo de ejecución o desde Inspector.
+    /// Reinicia el estado de GameOver al recargar una partida.
     /// </summary>
+    public void ResetGameOverState()
+    {
+        isGameOver = false;
+        if (sfxAudioSource != null)
+        {
+            sfxAudioSource.Stop();
+        }
+    }
+
+    // --- MÉTODOS DE AJUSTE DE VOLUMEN (VINCULABLES A SLIDERS) ---
+
+    public void SetMasterVolume(float volume)
+    {
+        masterVolume = Mathf.Clamp01(volume);
+        AudioListener.volume = masterVolume;
+        PlayerPrefs.SetFloat(PREF_MASTER, masterVolume);
+        PlayerPrefs.Save();
+    }
+
     public void SetMusicVolume(float volume)
     {
         musicVolume = Mathf.Clamp01(volume);
@@ -138,5 +202,18 @@ public class AudioManager : MonoBehaviour
         {
             musicAudioSource.volume = musicVolume;
         }
+        PlayerPrefs.SetFloat(PREF_MUSIC, musicVolume);
+        PlayerPrefs.Save();
+    }
+
+    public void SetSfxVolume(float volume)
+    {
+        sfxVolume = Mathf.Clamp01(volume);
+        if (sfxAudioSource != null)
+        {
+            sfxAudioSource.volume = sfxVolume;
+        }
+        PlayerPrefs.SetFloat(PREF_SFX, sfxVolume);
+        PlayerPrefs.Save();
     }
 }

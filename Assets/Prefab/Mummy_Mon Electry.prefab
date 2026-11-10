@@ -10,7 +10,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 100070, guid: 3353e4f866c39d043a315b41717c9bb7, type: 3}
       propertyPath: m_Name
-      value: Mummy_Mon
+      value: Mummy_Mon Electry
       objectReference: {fileID: 0}
     - target: {fileID: 400070, guid: 3353e4f866c39d043a315b41717c9bb7, type: 3}
       propertyPath: m_LocalScale.x
@@ -75,54 +75,35 @@ PrefabInstance:
     - target: {fileID: 13700000, guid: 3353e4f866c39d043a315b41717c9bb7, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: c6a081463c921704c8f4813b55a8d9cf, type: 2}
+      objectReference: {fileID: 2100000, guid: b3085357c4ac3454eb6019f21000af2b, type: 2}
     - target: {fileID: 13700002, guid: 3353e4f866c39d043a315b41717c9bb7, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: c6a081463c921704c8f4813b55a8d9cf, type: 2}
+      objectReference: {fileID: 2100000, guid: b3085357c4ac3454eb6019f21000af2b, type: 2}
     - target: {fileID: 13700004, guid: 3353e4f866c39d043a315b41717c9bb7, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: c6a081463c921704c8f4813b55a8d9cf, type: 2}
+      objectReference: {fileID: 2100000, guid: b3085357c4ac3454eb6019f21000af2b, type: 2}
     - target: {fileID: 13700006, guid: 3353e4f866c39d043a315b41717c9bb7, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: c6a081463c921704c8f4813b55a8d9cf, type: 2}
+      objectReference: {fileID: 2100000, guid: b3085357c4ac3454eb6019f21000af2b, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 100070, guid: 3353e4f866c39d043a315b41717c9bb7, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 8974459516201158624}
+      addedObject: {fileID: 7886457621342578747}
     - targetCorrespondingSourceObject: {fileID: 100070, guid: 3353e4f866c39d043a315b41717c9bb7, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 7886457621342578747}
+      addedObject: {fileID: 5129367976072945009}
   m_SourcePrefab: {fileID: 100100000, guid: 3353e4f866c39d043a315b41717c9bb7, type: 3}
 --- !u!1 &8981362282208389612 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 100070, guid: 3353e4f866c39d043a315b41717c9bb7, type: 3}
   m_PrefabInstance: {fileID: 8981362282208358154}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &8974459516201158624
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8981362282208389612}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b7a8f0d6e2fbe9749b1528ea5f6b3b3a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Enemy
-  enemyElement: 1
-  health: 10
-  moveSpeed: 6
-  detectionRange: 30
-  attackRange: 2
-  attackDamage: 5
-  attackCooldown: 1
 --- !u!136 &7886457621342578747
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -146,3 +127,22 @@ CapsuleCollider:
   m_Height: 1.483214
   m_Direction: 1
   m_Center: {x: 0, y: 0.7079839, z: 0.041698456}
+--- !u!114 &5129367976072945009
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8981362282208389612}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7a8f0d6e2fbe9749b1528ea5f6b3b3a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Enemy
+  enemyElement: 2
+  health: 25
+  moveSpeed: 2
+  detectionRange: 30
+  attackRange: 2
+  attackDamage: 10
+  attackCooldown: 3

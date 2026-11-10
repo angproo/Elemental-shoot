@@ -110,6 +110,13 @@ public class GameOverController : MonoBehaviour
     {
         AudioListener.pause = false;
         Time.timeScale = 1f; // Restaurar el tiempo normal
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.ResetGameOverState();
+            AudioManager.Instance.PlayAmbientMusic();
+        }
+
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
@@ -120,6 +127,13 @@ public class GameOverController : MonoBehaviour
     {
         AudioListener.pause = false;
         Time.timeScale = 1f; // Restaurar el tiempo normal
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.ResetGameOverState();
+            AudioManager.Instance.PlayAmbientMusic();
+        }
+
         SceneManager.LoadScene(mainMenuSceneName);
     }
 }

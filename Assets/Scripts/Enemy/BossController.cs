@@ -49,6 +49,7 @@ public class BossController : MonoBehaviour
     private bool isDead = false;
     private float nextAttackTime = 0f;
     private float nextShootTime = 0f;
+    private bool hasTriggeredBossMusic = false;
     private Transform playerTransform;
     private GameOverController gameOverController;
 
@@ -119,20 +120,33 @@ public class BossController : MonoBehaviour
 
         float distanceToPlayer = Vector3.Distance(transform.position, playerTransform.position);
 
-        if (distanceToPlayer <= detectionRange && distanceToPlayer > attackRange)
+        if (distanceToPlayer <= detectionRange)
         {
-            MoveTowardsPlayer();
-
-            if (canShootProjectiles && Time.time >= nextShootTime)
+            // Activa la música del jefe la primera vez que detecta al jugador
+            if (!hasTriggeredBossMusic)
             {
-                ShootAtPlayer();
+                hasTriggeredBossMusic = true;
+                if (AudioManager.Instance != null)
+                {
+                    AudioManager.Instance.PlayBossMusic();
+                }
             }
-        }
-        else if (distanceToPlayer <= attackRange)
-        {
-            if (Time.time >= nextAttackTime)
+
+            if (distanceToPlayer > attackRange)
             {
-                AttackPlayer();
+                MoveTowardsPlayer();
+
+                if (canShootProjectiles && Time.time >= nextShootTime)
+                {
+                    ShootAtPlayer();
+                }
+            }
+            else
+            {
+                if (Time.time >= nextAttackTime)
+                {
+                    AttackPlayer();
+                }
             }
         }
     }

@@ -82,7 +82,15 @@ public class PauseMenuController : MonoBehaviour
     /// </summary>
     public void RestartGame()
     {
+        AudioListener.pause = false;
         Time.timeScale = 1f; // Asegurar restaurar el tiempo antes de recargar
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.ResetGameOverState();
+            AudioManager.Instance.PlayAmbientMusic();
+        }
+
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
@@ -91,7 +99,15 @@ public class PauseMenuController : MonoBehaviour
     /// </summary>
     public void LoadMainMenu()
     {
+        AudioListener.pause = false;
         Time.timeScale = 1f; // Asegurar restaurar el tiempo antes de cambiar de escena
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.ResetGameOverState();
+            AudioManager.Instance.PlayAmbientMusic();
+        }
+
         SceneManager.LoadScene(mainMenuSceneName);
     }
 }
