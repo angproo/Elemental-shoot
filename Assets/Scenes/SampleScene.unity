@@ -1825,7 +1825,7 @@ MonoBehaviour:
   - {fileID: 8981362282208389612, guid: 9a4a6f4ce4913f840a534f01e6ce48f3, type: 3}
   - {fileID: 8981362282208389612, guid: d2f7e1e775060844fb70a2f0f01516d2, type: 3}
   - {fileID: 8981362282208389612, guid: c41fcadab3c228d4188f80102ac828e1, type: 3}
-  maxEnemiesToSpawn: 10
+  maxEnemiesToSpawn: 5
   maxAliveEnemies: 3
   spawnInterval: 2
   spawnPoints:
@@ -7312,7 +7312,7 @@ Transform:
   m_GameObject: {fileID: 1575414914}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 6.13, y: -0.4, z: 47.34}
+  m_LocalPosition: {x: 6.13, y: -0.4, z: -16.51}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
